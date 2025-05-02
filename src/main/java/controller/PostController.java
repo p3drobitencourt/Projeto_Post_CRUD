@@ -33,7 +33,6 @@ public class PostController extends HttpServlet {
 		switch (action) {
 		case "/facebook/post": {
 			
-			// Carregar a lista de usuários do banco
 			loadUsers(req);
 
 			RequestDispatcher rd = req.getRequestDispatcher("posts.jsp");
@@ -112,23 +111,26 @@ public class PostController extends HttpServlet {
 	}
 
 	private Post createPost(HttpServletRequest req) throws ModelException {
-		
-		String postId = req.getParameter("post_id");
-		String postContent = req.getParameter("post_content");
-		Date postDate = new Date();
-		int id = Integer.parseInt(req.getParameter("user_id"));
-		UserDAO daoUser = DAOFactory.createDAO(UserDAO.class);
+	    String postId = req.getParameter("post_id");
+	    String postContent = req.getParameter("post_content");
+	    Date postDate = new Date();
+	    int id = Integer.parseInt(req.getParameter("user_id"));
 
-		Post post;
-		if (postId == null || postId.equals(""))
-			post = new Post();
-		else post = new Post(Integer.parseInt(postId));
-		
-		post.setContent(postContent);
-		post.setPostDate(postDate);
-		post.setUser(daoUser.findById(id));
-		
-		return post;
+	    UserDAO daoUser = DAOFactory.createDAO(UserDAO.class);
+	    PostDAO daoPost = DAOFactory.createDAO(PostDAO.class);
+
+	    Post post;
+	    if (postId == null || postId.equals("")) {
+	        post = new Post(); 
+	    } else {
+	        post = daoPost.findById(Integer.parseInt(postId)); 
+	    }
+
+	    post.setContent(postContent);
+	    post.setPostDate(postDate);
+	    post.setUser(daoUser.findById(id));
+
+	    return post;
 	}
 
 	private void loadPost(HttpServletRequest req) {
